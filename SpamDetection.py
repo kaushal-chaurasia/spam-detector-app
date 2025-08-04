@@ -481,29 +481,30 @@ st.markdown("---")
 st.header(" Tools You Can Use")
 st.markdown('>Blockquote: To make a perfect spam filter, follow these steps:\n>1. 🔐 Spam filters: SpamTitan, Barracuda, Mailwasher\n>2. 📱 Apps for SMS spam: Truecaller, Hiya, RoboKiller.\n>3. 📧 Disposable email: TempMail, Mailinator \n> 4. 📬 Email verification: Never use your primary email for sign-ups.\n>5. 🛡️ Use a VPN: Protect your IP and location.')
 st.markdown("""----""")
-import os
+import streamlit as st
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
-# 📬 Function to send email via SendGrid
-def send_email(name, email, feedback, feedback_type):
-    message = Mail(
-        from_email='kaushalchaurasia2004@gmail.com',  # Must be verified sender in SendGrid
-        to_emails='kaushalchaurasia2004@gmail.com',            # Your email to receive feedback
-        subject=f'📬 Feedback from {name} - {feedback_type}',
-        html_content=f"""
-        <strong>Name:</strong> {name}<br>
-        <strong>Email:</strong> {email or 'Not provided'}<br>
-        <strong>Feedback Type:</strong> {feedback_type}<br><br>
-        <strong>Message:</strong><br>{feedback}
-        """
-    )
+# ✅ Function to send email via SendGrid
+def send_email(name, email, feedback, feedback_type, rating):
     try:
+        message = Mail(
+            from_email=st.secrets["kaushalchaurasia2004@gmail.com"],  # Verified sender in SendGrid
+            to_emails=st.secrets["kaushalchaurasia2004@gmail.com"],     # Your email to receive feedback
+            subject=f"📬 Feedback from {name} - {feedback_type}",
+            html_content=f"""
+                <strong>Name:</strong> {name}<br>
+                <strong>Email:</strong> {email or 'Not Provided'}<br>
+                <strong>Rating:</strong> {rating}/5<br>
+                <strong>Feedback Type:</strong> {feedback_type}<br><br>
+                <strong>Message:</strong><br>{feedback}
+            """
+        )
         sg = SendGridAPIClient(st.secrets["SENDGRID_API_KEY"])
-        response = sg.send(message)
+        sg.send(message)
         return True
     except Exception as e:
-        print(e)
+        print("Email sending error:", e)
         return False
 
 # ✅ Feedback Form UI
@@ -515,15 +516,16 @@ with st.form("feedback_form"):
     screenshot = st.file_uploader("Upload Screenshot (optional)", type=["png", "jpg", "jpeg"])
     if screenshot:
         st.image(screenshot, caption="Uploaded Screenshot", use_container_width=True)
-       
+
     feedback = st.text_area("Share your feedback")
     email = st.text_input("Your Email (optional)")
 
     submitted = st.form_submit_button("Submit")
 
     if submitted:
-        success = send_email(name, email, feedback, feedback_type)
+        success = send_email(name, email, feedback, feedback_type, rating)
         if success:
             st.success(f"✅ Thanks {name}, we appreciate your feedback! Email sent successfully.")
         else:
-            st.warning("⚠️ Feedback saved, but email notification failed.")
+            st.warning("⚠️ Feedback saved, but email notification failed. Check SendGrid secrets.")
+
