@@ -535,7 +535,8 @@ import datetime
 
 # Load credentials
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = Credentials.from_service_account_file("path_to_your_service_account.json", scopes=scope)
+creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
+
 client = gspread.authorize(creds)
 
 # Open the sheet
