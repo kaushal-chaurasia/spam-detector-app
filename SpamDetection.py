@@ -529,3 +529,21 @@ with st.form("feedback_form"):
         else:
             st.warning("⚠️ Feedback saved, but email notification failed. Check SendGrid secrets.")
 
+import gspread
+from google.oauth2.service_account import Credentials
+import datetime
+
+# Load credentials
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = Credentials.from_service_account_file("path_to_your_service_account.json", scopes=scope)
+client = gspread.authorize(creds)
+
+# Open the sheet
+sheet = client.open("Feedback").sheet1  # or by URL
+
+# Function to add feedback
+def log_feedback_to_gsheet(name, email, rating, feedback_type, message):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    row = [name, email, rating, feedback_type, message, timestamp]
+    sheet.append_row(row)
+log_feedback_to_gsheet(name, email, rating, feedback_type, feedback)
