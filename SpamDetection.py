@@ -530,7 +530,7 @@ with st.form("feedback_form"):
             st.warning("⚠️ Feedback saved, but email notification failed. Check SendGrid secrets.")
 
 import gspread
-from google.oauth2.service_account import Credentials
+
 import datetime
 
 # Load credentials
