@@ -504,7 +504,7 @@ def send_email(name, email, feedback, feedback_type, rating):
         sg.send(message)
         return True
     except Exception as e:
-        print("Email sending error:", e)
+        st.error(f"Email sending error: {e}")
         return False
 
 # ✅ Feedback Form UI
