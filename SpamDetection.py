@@ -489,8 +489,8 @@ from sendgrid.helpers.mail import Mail
 def send_email(name, email, feedback, feedback_type, rating):
     try:
         message = Mail(
-            from_email=st.secrets["kaushalchaurasia2004@gmail.com"],  # Verified sender in SendGrid
-            to_emails=st.secrets["kaushalchaurasia2004@gmail.com"],     # Your email to receive feedback
+             from_email=st.secrets["sendgrid"]["from_email"],
+            to_emails=st.secrets["sendgrid"]["to_email"],
             subject=f"📬 Feedback from {name} - {feedback_type}",
             html_content=f"""
                 <strong>Name:</strong> {name}<br>
@@ -500,7 +500,7 @@ def send_email(name, email, feedback, feedback_type, rating):
                 <strong>Message:</strong><br>{feedback}
             """
         )
-        sg = SendGridAPIClient(st.secrets["SENDGRID_API_KEY"])
+        sg = SendGridAPIClient(st.secrets["sendgrid"]["api_key"])
         sg.send(message)
         return True
     except Exception as e:
