@@ -533,22 +533,4 @@ import gspread
 
 import datetime
 
-# Load credentials
 
-from google.oauth2.service_account import Credentials
-
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
-
-
-client = gspread.authorize(creds)
-
-# Open the sheet
-sheet = client.open("Feedback").sheet1  # or by URL
-
-# Function to add feedback
-def log_feedback_to_gsheet(name, email, rating, feedback_type, message):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    row = [name, email, rating, feedback_type, message, timestamp]
-    sheet.append_row(row)
-log_feedback_to_gsheet(name, email, rating, feedback_type, feedback)
