@@ -481,15 +481,15 @@ st.markdown("---")
 st.header(" Tools You Can Use")
 st.markdown('>Blockquote: To make a perfect spam filter, follow these steps:\n>1. 🔐 Spam filters: SpamTitan, Barracuda, Mailwasher\n>2. 📱 Apps for SMS spam: Truecaller, Hiya, RoboKiller.\n>3. 📧 Disposable email: TempMail, Mailinator \n> 4. 📬 Email verification: Never use your primary email for sign-ups.\n>5. 🛡️ Use a VPN: Protect your IP and location.')
 st.markdown("""----""")
-import streamlit as st
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from twilio.rest import Client
 
-# ✅ Function to send email via SendGrid
+# ✅ Email Sending Function
 def send_email(name, email, feedback, feedback_type, rating):
     try:
         message = Mail(
-             from_email=st.secrets["sendgrid"]["from_email"],
+            from_email=st.secrets["sendgrid"]["from_email"],
             to_emails=st.secrets["sendgrid"]["to_email"],
             subject=f"📬 Feedback from {name} - {feedback_type}",
             html_content=f"""
@@ -507,6 +507,20 @@ def send_email(name, email, feedback, feedback_type, rating):
         st.error(f"Email sending error: {e}")
         return False
 
+# ✅ SMS Sending Function
+def send_sms(phone_number, user_name):
+    try:
+        client = Client(st.secrets["twilio"]["account_sid"], st.secrets["twilio"]["auth_token"])
+        message = client.messages.create(
+            body=f"Hi {user_name}, thanks for your feedback on the Spam Detector App! ✅",
+            from_=st.secrets["twilio"]["from_number"],
+            to=phone_number
+        )
+        return True
+    except Exception as e:
+        st.warning(f"⚠️ SMS failed: {e}")
+        return False
+
 # ✅ Feedback Form UI
 st.subheader("📬 Feedback")
 with st.form("feedback_form"):
@@ -518,20 +532,24 @@ with st.form("feedback_form"):
         st.image(screenshot, caption="Uploaded Screenshot", use_container_width=True)
 
     feedback = st.text_area("Share your feedback")
+    phone = st.text_input("📱 Your Phone Number (with country code, e.g. +91)")
     email = st.text_input("Your Email (optional)")
 
     submitted = st.form_submit_button("Submit")
 
     if submitted:
-        success = send_email(name, email, feedback, feedback_type, rating)
-        if success:
-            st.success(f"✅ Thanks {name}, we appreciate your feedback! Email sent successfully.")
+        email_sent = send_email(name, email, feedback, feedback_type, rating)
+        sms_sent = send_sms(phone, name)
+
+        if email_sent and sms_sent:
+            st.success(f"✅ Thanks {name}, your feedback was sent via email and SMS successfully!")
+        elif email_sent and not sms_sent:
+            st.warning("📬 Email sent but ⚠️ SMS failed. Check Twilio settings.")
+        elif not email_sent and sms_sent:
+            st.warning("📱 SMS sent but ⚠️ email failed. Check SendGrid settings.")
         else:
-            st.warning("⚠️ Feedback saved, but email notification failed. Check SendGrid secrets.")
+            st.error("❌ Both email and SMS sending failed. Check your secrets.")
 
-import gspread
-
-import datetime
 
 
 
