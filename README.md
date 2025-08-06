@@ -10,15 +10,8 @@ This interactive app is designed for both users and developers — allowing inst
 
 ## 🚀 Live App
 
-🔗 [Try the Live App on Streamlit](https://spam-detector-app.streamlit.app)  
-*(Replace with your actual Streamlit link)*
-
----
-
-## 🎥 Demo
-
-![Demo](screenshots/demo.gif)  
-*(Add your demo GIF inside a `/screenshots` folder)*
+🔗 [Try the Live App on Streamlit] 
+https://spam-detector-kaushal.streamlit.app/
 
 ---
 
